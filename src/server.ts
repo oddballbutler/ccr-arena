@@ -13,8 +13,10 @@ import { AnyMachineSnapshot, createActor } from "xstate";
 const actor = createActor(machine);
 
 function getNextTransitions(state: AnyMachineSnapshot) {
+  //Patterns used to ignore some transitions
   const regIgnoreTimedTransitions = /^xstate\.after\..*$/;
   const regIgnoreMatchLengthTransition = /^matchLengthChange.*$/;
+
   return state._nodes
     .flatMap((node) =>
       [...node.transitions.values()].map((item) =>
