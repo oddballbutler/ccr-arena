@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<script src="./htmx/htmx.js">htmx.logAll();</script>
+<script src="./htmx/ext/ws.js"></script>
+
+<body>
+    <main>
+        <div class="elastic container" hx-ext="ws" ws-connect="/">
+            <h2>CCR Arena Controls</h2>
+            <div id="ccrTimer"></div>
+            <div id="ccrContext"></div>
+            <div id="ccrState"></div>
+            <div id="ccrButtons"></div>
+
+            <div id="ccrDefaultTimes">
+                <button name="matchLength" value="120" ws-send>2 Min</button>
+                <button name="matchLength" value="180" ws-send>3 Min</button>
+                <button name="matchLength" value="300" ws-send>5 Min</button>
+            </div>
+            <form ws-send="">
+                <div>
+                    <label for="matchLength">Match Length (seconds):</label>
+                    <input type="number" id="matchLength" name="matchLength" min="0">
+                    <input type="submit" value="Send" class="btn primary" />
+                </div>
+            </form>
+        </div>
+</body>
+</main>
+
+</html>
