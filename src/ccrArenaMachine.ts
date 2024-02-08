@@ -7,8 +7,8 @@ export const machine = createMachine(
         color: "idle",
         state: "idle",
       },
-      matchLength: 5,
-      timerSeconds: 10,
+      matchLength: 180,
+      timerSeconds: 180,
     },
     id: "ccrArenaMachine",
     initial: "Idle",
@@ -130,6 +130,9 @@ export const machine = createMachine(
         },
       },
       "Match Done": {
+        entry: {
+          type: "setLightsRed",
+        },
         after: {
           "10000": {
             target: "#ccrArenaMachine.Idle",

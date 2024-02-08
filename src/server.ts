@@ -2,13 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 import express from "express";
 import { machine } from "./ccrArenaMachine.js";
-// import { createBrowserInspector } from "@statelyai/inspect";
 import { AnyMachineSnapshot, createActor } from "xstate";
-
-// const { inspect } = createBrowserInspector({
-//   // Comment out the line below to start the inspector
-//   // autoStart: true,
-// });
 
 const actor = createActor(machine);
 
@@ -66,19 +60,6 @@ wss.on("connection", function connection(ws) {
 });
 
 actor.subscribe((state) => {
-  // console.group("State update");
-  // console.log("%cState value:", "background-color: #056dff", state.value);
-  // console.log("%cState:", "background-color: #056dff", state);
-  // console.groupCollapsed("%cNext events:", "background-color: #056dff");
-  // console.log(
-  //   getNextTransitions(state)
-  //     .map((t) => {
-  //       return `feedbackActor.send({ type: '${t.eventType}' })`;
-  //     })
-  //     .join("\n\n")
-  // );
-  // console.groupEnd();
-  // console.groupEnd();
   const currentClientState = formatClientState(state);
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
@@ -120,11 +101,11 @@ function formatTimer(state: AnyMachineSnapshot) {
 
   timerString = `${minutes}:${seconds}`;
 
-  return `<div id=ccrTimer>${timerString}</div>`;
+  return `<div id=ccrTimer style="text-align:center;font-family:monospace;font-size:25vw;color:${state.context.lights.color};">${timerString}</div>`;
 }
 
 function formatButtons(state: AnyMachineSnapshot) {
-  return `<div id=ccrButtons>
+  return `<div id=ccrButtons class="ccrbtn-group">
 ${getNextTransitions(state)
   .map((t) => {
     return `<button name=message value="${t.eventType}" ws-send>${t.eventType}</button>`;
@@ -134,13 +115,13 @@ ${getNextTransitions(state)
 }
 
 function formatCurrentState(state: AnyMachineSnapshot) {
-  return `<div id=ccrState>
+  return `<div id=ccrState style="text-align:center;font-size:6vw;">
 ${JSON.stringify(state.value)}
 </div>`;
 }
 
 function formatCurrentContext(state: AnyMachineSnapshot) {
-  return `<div id=ccrContext>
+  return `<div id=ccrContext style="font-size:4vw;">
 <pre>${JSON.stringify(state.context, null, "  ")}</pre>
 </div>`;
 }
