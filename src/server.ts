@@ -3,6 +3,25 @@ import http from "http";
 import express from "express";
 import { machine } from "./ccrArenaMachine.js";
 import { AnyMachineSnapshot, createActor } from "xstate";
+import { getSerialPort } from "./ccrSerialPort.js";
+
+let ccrSerialPort = await getSerialPort();
+
+ccrSerialPort?.port?.on("data", onSerialData);
+
+function onSerialData(data: string) {
+  switch (data) {
+    case "1":
+      actor.send("button", 1);
+      break;
+    case "2":
+      socketServer.emit("button", 2);
+      break;
+
+    default:
+      break;
+  }
+}
 
 const actor = createActor(machine);
 
