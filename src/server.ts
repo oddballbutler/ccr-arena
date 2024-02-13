@@ -3,25 +3,25 @@ import http from "http";
 import express from "express";
 import { machine } from "./ccrArenaMachine.js";
 import { AnyMachineSnapshot, createActor } from "xstate";
-import { getSerialPort } from "./ccrSerialPort.js";
+// import { getSerialPort } from "./ccrSerialPort.js";
 
-let ccrSerialPort = await getSerialPort();
+// let ccrSerialPort = await getSerialPort();
 
-ccrSerialPort?.port?.on("data", onSerialData);
+// ccrSerialPort?.port?.on("data", onSerialData);
 
-function onSerialData(data: string) {
-  switch (data) {
-    case "1":
-      actor.send("button", 1);
-      break;
-    case "2":
-      socketServer.emit("button", 2);
-      break;
+// function onSerialData(data: string) {
+//   switch (data) {
+//     case "1":
+//       actor.send("button", 1);
+//       break;
+//     case "2":
+//       socketServer.emit("button", 2);
+//       break;
 
-    default:
-      break;
-  }
-}
+//     default:
+//       break;
+//   }
+// }
 
 const actor = createActor(machine);
 
@@ -92,7 +92,16 @@ function formatClientState(state: AnyMachineSnapshot) {
   const ccrButtons = formatButtons(state);
   const ccrState = formatCurrentState(state);
   const ccrContext = formatCurrentContext(state);
-  return [ccrTimer, ccrButtons, ccrState, ccrContext].join("\n");
+  const ccrAudio = formatAudio(state);
+  return [ccrTimer, ccrButtons, ccrState, ccrContext, ccrAudio].join("\n");
+}
+
+function formatAudio(state: AnyMachineSnapshot) {
+  let audioHtml = "";
+  if (state.context.timerSeconds < 10) {
+    audioHtml = '<audio src="countdown.wav" preload="auto" autoplay></audio>';
+  }
+  return `<div id="ccrAudio">${audioHtml}</div>`;
 }
 
 function formatTimer(state: AnyMachineSnapshot) {
