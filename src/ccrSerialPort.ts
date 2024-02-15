@@ -24,7 +24,7 @@ async function init() {
   );
 
   if (_serialPort.info) {
-    const port = new SerialPort({
+    _serialPort.port = new SerialPort({
       path: _serialPort.info.path,
       baudRate: 9600,
       autoOpen: true,
