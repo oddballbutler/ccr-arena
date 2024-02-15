@@ -1,20 +1,33 @@
 import WebSocket, { WebSocketServer } from "ws";
 import http from "http";
 import express from "express";
-import { machine } from "./ccrArenaMachine.js";
-// import { createBrowserInspector } from "@statelyai/inspect";
+import { AudioEnum, ccrLights, machine } from "./ccrArenaMachine.js";
 import { AnyMachineSnapshot, createActor } from "xstate";
+import { CCRSerialPort, getSerialPort } from "./ccrSerialPort.js";
 
-// const { inspect } = createBrowserInspector({
-//   // Comment out the line below to start the inspector
-//   // autoStart: true,
-// });
+let ccrSerialPort = await getSerialPort();
 
-const actor = createActor(machine);
+ccrSerialPort.port?.on("data", onSerialData);
+
+function onSerialData(data: Buffer) {
+  const _data = data.toString();
+  console.log(_data);
+  switch (_data) {
+    case "1":
+    case "2":
+      actor.send({ type: "ccrHidden.ButtonPress" });
+      break;
+    default:
+      break;
+  }
+}
 
 function getNextTransitions(state: AnyMachineSnapshot) {
+  //Patterns used to ignore some transitions
   const regIgnoreTimedTransitions = /^xstate\.after\..*$/;
   const regIgnoreMatchLengthTransition = /^matchLengthChange.*$/;
+  const regIgnoreNoShow = /^ccrHidden\..*$/;
+
   return state._nodes
     .flatMap((node) =>
       [...node.transitions.values()].map((item) =>
@@ -22,12 +35,67 @@ function getNextTransitions(state: AnyMachineSnapshot) {
           (item) =>
             !(
               regIgnoreTimedTransitions.test(item.eventType) ||
-              regIgnoreMatchLengthTransition.test(item.eventType)
+              regIgnoreMatchLengthTransition.test(item.eventType) ||
+              regIgnoreNoShow.test(item.eventType)
             )
         )
       )
     )
     .flat(1);
+}
+
+function ccrPlayAudio(sound: AudioEnum) {
+  let soundType = "";
+  switch (sound) {
+    case AudioEnum.start:
+      soundType = "ccrStart";
+      break;
+    case AudioEnum.countdown:
+      soundType = "ccrCountdown";
+      break;
+    case AudioEnum.buzzer:
+      soundType = "ccrBuzzer";
+      break;
+    case AudioEnum.ready:
+      soundType = "ccrReady";
+      break;
+    default:
+      //Don't do anything for other sounds
+      return;
+  }
+
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(
+        `<div id="ccrAudio"><script>${soundType}.play()</script></div>`
+      );
+    }
+  });
+}
+
+let lastLights = { color: "" };
+function ccrSetLights(lights: ccrLights) {
+  if (lastLights.color === lights.color) {
+    return;
+  }
+  lastLights = lights;
+  switch (lights.color) {
+    case "idle":
+      ccrSerialPort?.port?.write("S");
+      break;
+    case "green":
+      ccrSerialPort?.port?.write("G");
+      break;
+    case "yellow":
+      ccrSerialPort?.port?.write("Y");
+      break;
+    case "red":
+      ccrSerialPort?.port?.write("R");
+      break;
+    default:
+      //Don't do anything for other cases
+      return;
+  }
 }
 
 const PORT = 3000;
@@ -38,6 +106,11 @@ app.use(express.static("./src/static"));
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
+
+const actor = createActor(machine, {
+  input: { playAudio: ccrPlayAudio, setLights: ccrSetLights },
+});
+let lastSnapshot = actor.getSnapshot();
 
 wss.on("connection", function connection(ws) {
   console.log("Client Connected");
@@ -60,37 +133,48 @@ wss.on("connection", function connection(ws) {
     console.log("Client disconnected");
   });
 
-  ws.send(formatClientState(actor.getSnapshot()));
+  ws.send(initClientState(lastSnapshot));
 });
 
 actor.subscribe((state) => {
-  // console.group("State update");
-  // console.log("%cState value:", "background-color: #056dff", state.value);
-  // console.log("%cState:", "background-color: #056dff", state);
-  // console.groupCollapsed("%cNext events:", "background-color: #056dff");
-  // console.log(
-  //   getNextTransitions(state)
-  //     .map((t) => {
-  //       return `feedbackActor.send({ type: '${t.eventType}' })`;
-  //     })
-  //     .join("\n\n")
-  // );
-  // console.groupEnd();
-  // console.groupEnd();
-  const currentClientState = formatClientState(state);
+  const currentClientState = formatClientStateDiff(state);
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(currentClientState);
     }
   });
+  lastSnapshot = state;
 });
 
-function formatClientState(state: AnyMachineSnapshot) {
+function initClientState(state: AnyMachineSnapshot) {
   const ccrTimer = formatTimer(state);
   const ccrButtons = formatButtons(state);
   const ccrState = formatCurrentState(state);
   const ccrContext = formatCurrentContext(state);
+  const _ccrSerialPort = formatSerialPort(ccrSerialPort);
+
+  return [ccrTimer, ccrButtons, ccrState, _ccrSerialPort, ccrContext].join(
+    "\n"
+  );
+}
+
+function formatClientStateDiff(state: AnyMachineSnapshot) {
+  const ccrTimer = formatTimer(state);
+  let ccrButtons = "";
+  let ccrState = "";
+  const ccrContext = formatCurrentContext(state);
+
+  if (JSON.stringify(state.value) !== JSON.stringify(lastSnapshot.value)) {
+    ccrButtons = formatButtons(state);
+    ccrState = formatCurrentState(state);
+  }
+
   return [ccrTimer, ccrButtons, ccrState, ccrContext].join("\n");
+}
+
+function formatSerialPort(serialPort: CCRSerialPort) {
+  const serialPortText = serialPort.port?.isOpen ? "open" : "closed";
+  return `<div id="ccrSerialPort">Serial port is ${serialPortText}</div>`;
 }
 
 function formatTimer(state: AnyMachineSnapshot) {
@@ -100,8 +184,8 @@ function formatTimer(state: AnyMachineSnapshot) {
   const timerSeconds = state.context.timerSeconds;
 
   const _fight =
-    typeof state.value !== "string" && state.value["Fight"]
-      ? state.value["Fight"]
+    typeof state.value !== "string" && state.value["Fight"]["Running"]
+      ? state.value["Fight"]["Running"]
       : "";
   switch (_fight) {
     case "3":
@@ -118,7 +202,7 @@ function formatTimer(state: AnyMachineSnapshot) {
 
   timerString = `${minutes}:${seconds}`;
 
-  return `<div id=ccrTimer>${timerString}</div>`;
+  return `<div id=ccrTimer style="color:${state.context.lights.color};">${timerString}</div>`;
 }
 
 function formatButtons(state: AnyMachineSnapshot) {

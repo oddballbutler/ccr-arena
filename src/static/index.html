@@ -1,31 +1,187 @@
 <!DOCTYPE html>
-<html>
-<script src="./htmx/htmx.js">htmx.logAll();</script>
-<script src="./htmx/ext/ws.js"></script>
+<html style="color: white; background-color: black">
+  <script src="htmx/htmx.js">
+    htmx.logAll();
+  </script>
+  <script src="htmx/ext/ws.js"></script>
+  <script src="howler.js"></script>
+  <style>
+    button {
+      appearance: none;
+      background-color: #fafbfc;
+      border: 1px solid rgba(27, 31, 35, 0.15);
+      border-radius: 6px;
+      box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0,
+        rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+      box-sizing: border-box;
+      color: #24292e;
+      cursor: pointer;
+      display: inline-block;
+      font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      list-style: none;
+      padding: 6px 16px;
+      position: relative;
+      /* transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1); */
+      user-select: none;
+      -webkit-user-select: none;
+      /* touch-action: manipulation; */
+      vertical-align: middle;
+      white-space: nowrap;
+      word-wrap: break-word;
+    }
 
-<body>
+    button:hover {
+      background-color: #f3f4f6;
+      text-decoration: none;
+      transition-duration: 0.1s;
+    }
+
+    button:disabled {
+      background-color: #fafbfc;
+      border-color: rgba(27, 31, 35, 0.15);
+      color: #959da5;
+      cursor: default;
+    }
+
+    button:active {
+      background-color: #edeff2;
+      box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+      transition: none 0s;
+    }
+
+    button:focus {
+      outline: 1px transparent;
+    }
+
+    button:before {
+      display: none;
+    }
+
+    button:-webkit-details-marker {
+      display: none;
+    }
+
+    #ccrButtons button {
+      /* background-color: #04AA6D; */
+      /* Green background */
+      /* border: 1px solid green; */
+      /* Green border */
+      /* color: white; */
+      /* White text */
+      padding: 1vw;
+      margin: 1vw;
+
+      /* Some padding */
+      /* cursor: pointer; */
+      /* Pointer/hand icon */
+      width: 100%;
+      font-size: 5vw;
+      height: 15vw;
+      /* Set a width if needed */
+      display: block;
+      /* Make the buttons appear below each other */
+    }
+
+    .defaultTimes-group {
+      display: flex;
+    }
+
+    .defaultTimes-group * {
+      font-size: 5vw;
+      margin: 1vw;
+      flex: 1 0 auto;
+      height: 10vw;
+    }
+
+    .input-group {
+      display: flex;
+    }
+
+    .input-group * {
+      font-size: 5vw;
+      margin: 1vw;
+    }
+
+    .input-group input {
+      flex: auto;
+    }
+
+    .input-group button {
+      height: 10vw;
+      flex: auto;
+    }
+
+    #ccrTimer {
+      text-align: center;
+      font-family: monospace;
+      font-size: 25vw;
+    }
+
+    #ccrContext {
+      font-size: 4vw;
+    }
+
+    #ccrState {
+      text-align: center;
+      font-size: 6vw;
+    }
+  </style>
+
+  <script>
+    const ccrCountdown = new Howl({
+      src: ["sounds/countdown.wav"],
+    });
+    const ccrBuzzer = new Howl({
+      src: ["sounds/buzzer.wav"],
+    });
+    const ccrStart = new Howl({
+      src: ["sounds/start.wav"],
+    });
+    const ccrReady = new Howl({
+      src: ["sounds/ready.wav"],
+    });
+  </script>
+
+  <body>
     <main>
-        <div class="elastic container" hx-ext="ws" ws-connect="/">
-            <h2>CCR Arena Controls</h2>
-            <div id="ccrTimer"></div>
-            <div id="ccrContext"></div>
-            <div id="ccrState"></div>
-            <div id="ccrButtons"></div>
+      <h2 style="text-align: center">CCR Arena Controls</h2>
+      <div hx-ext="ws" ws-connect="/">
+        <div id="ccrTimer"></div>
+        <div id="ccrState"></div>
+        <div id="ccrButtons" class="ccrbtn-group"></div>
+        <div id="ccrAudio"></div>
 
-            <div id="ccrDefaultTimes">
-                <button name="matchLength" value="120" ws-send>2 Min</button>
-                <button name="matchLength" value="180" ws-send>3 Min</button>
-                <button name="matchLength" value="300" ws-send>5 Min</button>
-            </div>
-            <form ws-send="">
-                <div>
-                    <label for="matchLength">Match Length (seconds):</label>
-                    <input type="number" id="matchLength" name="matchLength" min="0">
-                    <input type="submit" value="Send" class="btn primary" />
-                </div>
-            </form>
+        <div style="height: 15vw"></div>
+        <form ws-send="">
+          <div class="input-group">
+            <input
+              type="number"
+              id="matchLength"
+              name="matchLength"
+              min="1"
+              placeholder="Match Length (seconds)"
+              required
+            />
+            <button type="submit" value="Send" class="btn primary">Send</button>
+          </div>
+        </form>
+        <div
+          id="ccrDefaultTimes"
+          class="defaultTimes-group"
+          style="display: flex"
+        >
+          <button name="matchLength" value="120" ws-send>2 Min</button>
+          <button name="matchLength" value="180" ws-send>3 Min</button>
+          <button name="matchLength" value="300" ws-send>5 Min</button>
         </div>
-</body>
-</main>
 
+        <div id="ccrSerialPort"></div>
+        <!-- <div id="ccrContext"></div> -->
+      </div>
+    </main>
+  </body>
 </html>

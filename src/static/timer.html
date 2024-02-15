@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html style="color: white; background-color: black">
+  <script src="./htmx/htmx.js"></script>
+  <script src="./htmx/ext/ws.js"></script>
+
+  <style>
+    #ccrTimer {
+      text-align: center;
+      font-family: monospace;
+      font-size: 25vw;
+    }
+  </style>
+
+  <body>
+    <main>
+      <div
+        hx-ext="ws"
+        ws-connect="/"
+        style="
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        "
+      >
+        <div id="ccrTimer"></div>
+      </div>
+    </main>
+  </body>
+</html>
