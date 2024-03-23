@@ -1,30 +1,28 @@
 <!DOCTYPE html>
-<html style="color: white; background-color: black">
-  <script src="./htmx/htmx.js"></script>
-  <script src="./htmx/ext/ws.js"></script>
+<html style="color: black; background-color: white;">
+<script src="./htmx/htmx.js"></script>
+<script src="./htmx/ext/ws.js"></script>
 
-  <style>
-    #ccrTimer {
-      text-align: center;
-      font-family: monospace;
-      font-size: 25vw;
-    }
-  </style>
+<style>
+  #ccrTimer {
+    text-align: center;
+    font-family: monospace;
+    font-size: 25vw;
+    -webkit-text-stroke: .03em black;
+  }
+</style>
 
-  <body>
-    <main>
-      <div
-        hx-ext="ws"
-        ws-connect="/"
-        style="
+<body>
+  <main>
+    <div hx-ext="ws" ws-connect="/" style="
           position: absolute;
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-        "
-      >
-        <div id="ccrTimer"></div>
-      </div>
-    </main>
-  </body>
+        ">
+      <div id="ccrTimer"></div>
+    </div>
+  </main>
+</body>
+
 </html>

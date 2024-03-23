@@ -120,6 +120,12 @@ export const machine = setup({
         "Prepare For Next Match": {
           target: "Drivers Readying",
         },
+        "ccrHidden.ButtonPress": {
+          target: "Drivers Readying",
+          actions: {
+            "type": "playReady"
+          }
+        },
       },
     },
 
