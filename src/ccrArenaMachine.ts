@@ -27,6 +27,7 @@ export const machine = setup({
     context: {} as {
       playAudio: (sound: AudioEnum) => void | null;
       setLights: (lights: ccrLights) => void | null;
+      setOverHeadLights: (on: boolean) => void | null;
       lights: ccrLights;
       matchLength: number;
       timerSeconds: number;
@@ -34,6 +35,7 @@ export const machine = setup({
     input: {} as {
       playAudio: (sound: AudioEnum) => void | null;
       setLights: (lights: ccrLights) => void | null;
+      setOverHeadLights: (on: boolean) => void | null;
     },
   },
   actions: {
@@ -47,6 +49,8 @@ export const machine = setup({
     TICK: assign({
       timerSeconds: ({ context }) => context.timerSeconds - 1,
     }),
+    overheadLightsOn: ({ context }) => context?.setOverHeadLights(true),
+    overheadLightsOff: ({ context }) => context?.setOverHeadLights(false),
     setLightsRed: ({ context }) => {
       context.lights = { color: "red" };
       if (context.setLights) {
@@ -97,10 +101,11 @@ export const machine = setup({
   },
   delays: {},
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGNkCcCCawDsCGAsnsgBYCWOYAxAEpxgAuA2gAwC6ioADgPaxkMyPHJxAAPRAFoAnCwB0AZgBMANgUqWAdgAsLAKwKFmzQBoQAT0TSlADjkrtKm3r3alL6QEZPAXx9nUTGx8IlIKagBbPAZSABlcKAYSAGESPBwYVg4kEF5+QWFRCQQHO09pBV13Q08jBTNLBE89L0UFT21tdWk9Gy1tPwD0LFxCYnJKOQBJCAAbagAFbC48bAACADEeNDWAOTAxBjWiGJIs0TyBIREc4trtexY1GwVpG1lpTobET1tpe28Xm0NhUBl+0kGIECIxC43Ccg2ZCgJAYVAAojgIMdoqRzjlLgUbqA7jZbHJtC1nEp1NpPCx3N8SnpNOTNH0bJparU9L5-FDhsExmFJojkQw5As8ABXWCQWhwKURMDY0547h8K6FW6IZz2TSglReTQsIxPTyMzTtclKJSaaTWLpKNwKSHQwWhCZgBFIlFyGhSnA4ChQKiSmXKk649gXDWEopWJQAlieNmqLrOTw2RluRMsT42GzlF6G5yugWjD3w0W+-2B4NyTxUMSwBjRL14ABmDDAaAAFHSWCwAJRUN0VuEin3i2tBjINtW5WPXeNNdSeewKPROQxeEGcxnMxPaY2k6luTROvRloLj4Ve6vTgOzqByJRNlttuSd7t9gfD0flrCd7emKfpPvWSgLgSy7ak09Lrk8trWCohpOsojIaHYKhpraryGKWfJjkBnogTW4Fzgo76tt2X5dj2-aDv+RFCiRD5gXWFFQUuWrEogTjyMC9rJp8KHlPUFh8SwWE4ZaFQKARQw3sRVZTuxz5yAAKmQSo7DOwYAWgAASZAQBAuByAAQlKDAMMISxwLAXH5DBvFNLIdi9EoJqOMCxbZjy5KdIJmgGMe1LXjCLEqaBelzlpOlrLFIZOZqRLiD8KEslUSiyJ5jjSKYEkIMYDx9A4IU7gWjgRe6E73qpSWadpPaJeRyWeNk6rOTx6VNBS-w8luKFvChKhshaLyKJmvSZmyji2jVt6sQ1bVNQlSVUZ+370X+I7MZWk4xat8UtUlKVxrBzRPK+7iyHSnwsF0KjZoOcgclJ9q6Chg4qItymTJGJBrAAIsI1DNtR7Z0b+jFMYBUUAziQOg5Q50ub1SiZg8ngqLU0igjoKbOBhvSshyehSZmNqcn9CNesDaBkAAbj2sCJWAeAQOY+kAMqtmgRyA2jPXFK4iaboWKYpjavxKIydIOG9mb6DyCj6L8mi0wd9OMyzaBs3QnPcxkBnGaZ5lWTZdnYLAjnRvi3FpcUnJ2FJktebjVR6PLOOJthhpsqrdq9H4fI4DwZnwDk+11TG3VO1IOPrjyDhbiahYS89RW1HYsiYy0ONSeoBha3V0xzGAcepSukjeAocgpxSGjydyILy+odi6OTj0pjoWil8BD5Vxdrn-MoRjeBTeYZ5mjI2ioN0U7JPS9M4v2EfD2ukeKYayhAw-o6LLLj5yV3T7UctFVu9dsrjoJ4TLA-LUdHFQAfIuILS64oWrIU6L-vxGTtHrq4O0BYXjeX0OvRSkUt5sUap4d+CcmgdHkOyZwLsXjlAPMaN6fQCpdDVtoEaT9opkVfq+JBK4+jyGpC0FCjgtw9HNFfSaHJZCGByn0HkAwN5KTptvNS9YFBUNgv1ewagtDMi6FoQBV9cEFjzEJWWOVNZ8NgWXeBx1mq6TaqI1yzR1ASOIXaamtRsIYQ6A3Nwg4Qq9AcIaUhiNTggzBvo3q5Q2RyH6JjQsToUyGAwl5OQlpOFoWNC7JxOtmas3ZkbYM7jRb0jkPjdQTwLxOE5KoeWqg9BvVBCmWkeZQQclDj4IAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGNkCcCCawDsCGAsnsgBYCWOYAxAEpxgAuA2gAwC6ioADgPaxkMyPHJxAAPRAFoAnCwB0AZgBMANgUqWAdgAsLAKwKFmzQBoQAT0TSlADjkrtKm3r3alL6QEZPAXx9nUTGx8IlIKagBbPAZSABlcKAYSAGESPBwYVg4kEF5+QWFRCQQHO09pBV13Q08jBTNLBE89L0UFT21tdWk9Gy1tPwD0LFxCYnJKOQBJCAAbagAFbC48bAACADEeNDWAOTAxBjWiGJIs0TyBIREc4trtexY1GwVpG1lpTobET1tpe28Xm0NhUBl+0kGIECIxC43C0zm1ECAAkyBAILg5AAhACuDAYwiWcFg5xylwKN1Ad1siherlcNmMXX03yaCj0nkUgOaKls7iUCkh0OCYzCkw2ZCgJAYVAAojgIMdoqRSdw+FdCrcfjYadoWs4BQ5PCx3KzQZo5NpNH1GbVahyhcMRaEJmA5BKpQw5As8DjYJBaHAcREwErTqrcuqKUVEM57JpQSovJoWEYnp5WZp2palEpNNJrF0lG5Bf4oU7Ri74R7pXIaDicDgKFAqD6-aGTir2Bco9cYwhrACWJ5raous5PDZWW4lHIWJ8bDZyi8k85HUFK3DxZLa-XG825J4qGJYAxom68AAzBhgNAACmNLBYAEoqMLN2K3TWvXumxlDxG5J9lqbIqJyah6E4hheCCmgZhYiB6Jos5WiwOoCm4yF6uuMKiq67o7j+DZ-lAchKMep7nnIV43vej4vm+Fawp+BGenWxEHkogG9pqVI-CanJPHm1gqEmxbKGaaH2GOeavIYa5lu+zH4d+7H7v+CgUWeN7Udet4Pk+DFKXh1aEWpJGKNx+TAXxJR9Ja7yyOUjhgRUkl2LyDiyRUCgKUMG7KaZbG-geAAqZAhjsIUZIxaCouimK4vihLYLAJLdmSPGUuIPyyHYvRKKmjjAiu04cpanTAtImgGFaAo4c6W5fmZ0WkeFkVrK1VBWRq2V3KJFpVEosgFY41WZjoch9A4NXQYujgNR+KktRx-7tbenWrS2TCeNkarWbxOVNHq-wcpBolvKJKjWpmLxcs4S6MjYjh5otgXbsFW1yOtUVbVpVE0fp9GvsZVYfbuX0-Zt6lQD10Ygc0Txke4TnzroXQqNOT5TSmjm6KJT4qG9JmTJ2JBrAAIsI1AntpF56XRhlGUxJNumTlPU3DNlHUok4PJ4YGvOa2gjs4Zq9Ja1o1Whk65nBxNg26FNoGQABut6wJ1YB4BA5jNlQADKZ5oEcZNc4dxSuLO7JLiOI65r8SissaDhTZO+gcgo+i-JoCtNXIytqxrWs63rMUomiGI4NieIEjgRJpebfWIHBdhobbhVgVUejOwLs6edVE5GD0Nh+GWOA8Bi8A5KDTU9gdycIJIAuchyDiQamS425jCFsnY1VofmvktLIRh+yxMzzPXvX9s3tRyG3eoaL59ogs76h2LojJ6CwItMlo4-LZ60-w7Z-zKEY3g7-OXeTqyuYqGRuMgvoPR5rUh9BbWbb+hAJ-c5bC0F84KIxvrUJ2vdIIKDkNaMCoI5IO0-uDIiMN-4W0QCLcCagtBIWZHBCBjR2jQKQmhawWYvbPFLP5XCitWIQxhoeNBjdvC6CmunJCk4XjlFZCQqafRqpdC9toS6SDmqfQYUoJh-Y+jyAFC0USjhII9Hgo0Xo0DGSj2UG8b2AxFIs1oapVqigpEgROvYbBNUdBe3wTwlMfD5wFmHLmYavs9EBVZnQlBFkoatRMbZZo6hzHCPzHLWovIzQdAXm4J8NVegOCTKIuQ7MqaUD8Udco1o5w6F5kuYsI5DBmkKjAwwyhxIplTokwO6s0CazoKHZsaTLYmjkNINQGhrqqFtKoZ2qg9BTVBCOEW85QSMjLj4IAA */
   context: ({ input }) => ({
     playAudio: input.playAudio || null,
     setLights: input.setLights || null,
+    setOverHeadLights: input.setOverHeadLights || null,
     lights: {
       color: "idle",
       state: "idle",
@@ -146,12 +151,9 @@ export const machine = setup({
 
           states: {
             "3": {
-              entry: [
-                {
-                  type: "setLightsRed",
-                },
-                "playCountdown",
-              ],
+              entry: [{
+                type: "setLightsRed",
+              }, "playCountdown", "overheadLightsOff"],
 
               after: {
                 "1000": {
@@ -184,12 +186,9 @@ export const machine = setup({
               after: {
                 "1000": {
                   target: "Timer Running",
-                  actions: [
-                    {
-                      type: "setLightsGreen",
-                    },
-                    "playStart",
-                  ],
+                  actions: [{
+                    type: "setLightsGreen",
+                  }, "playStart", "overheadLightsOn"],
                   meta: {},
                   reenter: true,
                 },

@@ -73,6 +73,12 @@ function ccrPlayAudio(sound: AudioEnum) {
   });
 }
 
+function ccrSetOverHeadLights(on: boolean) {
+  on ?
+    ccrSerialPort?.port?.write("L") :
+    ccrSerialPort?.port?.write("l");
+}
+
 let lastLights = { color: "" };
 function ccrSetLights(lights: ccrLights) {
   if (lastLights.color === lights.color) {
@@ -108,7 +114,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const actor = createActor(machine, {
-  input: { playAudio: ccrPlayAudio, setLights: ccrSetLights },
+  input: { playAudio: ccrPlayAudio, setLights: ccrSetLights, setOverHeadLights: ccrSetOverHeadLights },
 });
 let lastSnapshot = actor.getSnapshot();
 
@@ -208,10 +214,10 @@ function formatTimer(state: AnyMachineSnapshot) {
 function formatButtons(state: AnyMachineSnapshot) {
   return `<div id=ccrButtons>
 ${getNextTransitions(state)
-  .map((t) => {
-    return `<button name=message value="${t.eventType}" ws-send>${t.eventType}</button>`;
-  })
-  .join("")}
+      .map((t) => {
+        return `<button name=message value="${t.eventType}" ws-send>${t.eventType}</button>`;
+      })
+      .join("")}
 </div>`;
 }
 
