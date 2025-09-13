@@ -40,10 +40,9 @@ export const machine = setup({
   },
   actions: {
     init: ({ context }) => {
-      context.lights = { color: "idle" };
-      if (context.setLights) {
-        context.setLights(context.lights);
-      }
+      context.lights = { color: "idle" }
+      context?.setLights(context.lights)
+      context?.setOverHeadLights(true)
       context.timerSeconds = context.matchLength;
     },
     TICK: assign({
@@ -101,7 +100,7 @@ export const machine = setup({
   },
   delays: {},
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGNkCcCCawDsCGAsnsgBYCWOYAxAEpxgAuA2gAwC6ioADgPaxkMyPHJxAAPRAFoAnCwB0AZgBMANgUqWAdgAsLAKwKFmzQBoQAT0TSlADjkrtKm3r3alL6QEZPAXx9nUTGx8IlIKagBbPAZSABlcKAYSAGESPBwYVg4kEF5+QWFRCQQHO09pBV13Q08jBTNLBE89L0UFT21tdWk9Gy1tPwD0LFxCYnJKOQBJCAAbagAFbC48bAACADEeNDWAOTAxBjWiGJIs0TyBIREc4trtexY1GwVpG1lpTobET1tpe28Xm0NhUBl+0kGIECIxC43C0zm1ECAAkyBAILg5AAhACuDAYwiWcFg5xylwKN1Ad1siherlcNmMXX03yaCj0nkUgOaKls7iUCkh0OCYzCkw2ZCgJAYVAAojgIMdoqRSdw+FdCrcfjYadoWs4BQ5PCx3KzQZo5NpNH1GbVahyhcMRaEJmA5BKpQw5As8DjYJBaHAcREwErTqrcuqKUVEM57JpQSovJoWEYnp5WZp2palEpNNJrF0lG5Bf4oU7Ri74R7pXIaDicDgKFAqD6-aGTir2Bco9cYwhrACWJ5raous5PDZWW4lHIWJ8bDZyi8k85HUFK3DxZLa-XG825J4qGJYAxom68AAzBhgNAACmNLBYAEoqMLN2K3TWvXumxlDxG5J9lqbIqJyah6E4hheCCmgZhYiB6Jos5WiwOoCm4yF6uuMKiq67o7j+DZ-lAchKMep7nnIV43vej4vm+Fawp+BGenWxEHkogG9pqVI-CanJPHm1gqEmxbKGaaH2GOeavIYa5lu+zH4d+7H7v+CgUWeN7Udet4Pk+DFKXh1aEWpJGKNx+TAXxJR9Ja7yyOUjhgRUkl2LyDiyRUCgKUMG7KaZbG-geAAqZAhjsIUZIxaCouimK4vihLYLAJLdmSPGUuIPyyHYvRKKmjjAiu04cpanTAtImgGFaAo4c6W5fmZ0WkeFkVrK1VBWRq2V3KJFpVEosgFY41WZjoch9A4NXQYujgNR+KktRx-7tbenWrS2TCeNkarWbxOVNHq-wcpBolvKJKjWpmLxcs4S6MjYjh5otgXbsFW1yOtUVbVpVE0fp9GvsZVYfbuX0-Zt6lQD10Ygc0Txke4TnzroXQqNOT5TSmjm6KJT4qG9JmTJ2JBrAAIsI1AntpF56XRhlGUxJNumTlPU3DNlHUok4PJ4YGvOa2gjs4Zq9Ja1o1Whk65nBxNg26FNoGQABut6wJ1YB4BA5jNlQADKZ5oEcZNc4dxSuLO7JLiOI65r8SissaDhTZO+gcgo+i-JoCtNXIytqxrWs63rMUomiGI4NieIEjgRJpebfWIHBdhobbhVgVUejOwLs6edVE5GD0Nh+GWOA8Bi8A5KDTU9gdycIJIAuchyDiQamS425jCFsnY1VofmvktLIRh+yxMzzPXvX9s3tRyG3eoaL59ogs76h2LojJ6CwItMlo4-LZ60-w7Z-zKEY3g7-OXeTqyuYqGRuMgvoPR5rUh9BbWbb+hAJ-c5bC0F84KIxvrUJ2vdIIKDkNaMCoI5IO0-uDIiMN-4W0QCLcCagtBIWZHBCBjR2jQKQmhawWYvbPFLP5XCitWIQxhoeNBjdvC6CmunJCk4XjlFZCQqafRqpdC9toS6SDmqfQYUoJh-Y+jyAFC0USjhII9Hgo0Xo0DGSj2UG8b2AxFIs1oapVqigpEgROvYbBNUdBe3wTwlMfD5wFmHLmYavs9EBVZnQlBFkoatRMbZZo6hzHCPzHLWovIzQdAXm4J8NVegOCTKIuQ7MqaUD8Udco1o5w6F5kuYsI5DBmkKjAwwyhxIplTokwO6s0CazoKHZsaTLYmjkNINQGhrqqFtKoZ2qg9BTVBCOEW85QSMjLj4IAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGNkCcCCawDsCGAsnsgBYCWOYAxAEpxgAuA2gAwC6ioADgPaxkMyPHJxAAPRAFoAnCwB0AZgBMANgUqWAdgAsLAKwKFmzQBoQAT0TSlADjkrtKm3r3alL6QEZPAXx9nUTGx8IlIKagBbPAZSABlcKAYSAGESPBwYVg4kEF5+QWFRCQQHO09pBV13Q08jBTNLBE89L0UFT21tdWk9Gy1tPwD0LFxCYnJKOQBJCAAbagAFbC48bAACADEeNDWAOTAxBjWiGJIs0TyBIREc4trtexY1GwVpG1lpTobET1tpe28Xm0NhUBl+0kGIECIxC43C0zm1ECAAkyBAILg5AAhACuDAYwiWcFg5xylwKN1Ad1siherlcNmMXX03yaCj0nkUgOaKls7iUCkh0OCYzCkw2ZCgJAYVAAojgIMdoqRSdw+FdCrcfjYadoWs4BQ5PCx3KzQZo5NpNH1GbVahyhcMRaEJmA5BKpQw5As8DjYJBaHAcREwErTqrcuqKUVEM57JpQSovJoWEYnp5WZp2palEpNNJrF0lG5Bf4oU7Ri74R7pXIaDicDgKFAqD6-aGTir2Bco9cYwhrACWJ5raous5PDZWW4lHIWJ8bDZyi8k85HUFK3DxZLa-XG825J4qGJYAxom68AAzBhgNAACj0LBYAEoqMLN2K3TWvXumxlDxG5J9lqTTFpyah6E4hheCCmgZhYiApioh59NIDh5mhoJ6OuMKiq67o7j+DZ-lAh7Hqe55yFeN73saT6vu+sKfgRnp1sRB6eIBvaalSPzqOB7JQa8k4qHBrJ6Jos5WiwOoCm4kl6jhzpbl+hFsfu-5KORZ43lR163nedEvm+FZMfh37qSRchKFx+TAbxTQmpyTwYaoSbFsoZoyfYY55q8hhrmWjF4dWam-geCjaZR1EGUZDGmSF26seF-4KLZGqUuIiBOPIwIFsOnwqCo5T1AhJTeby6FZhUCiBUMG5maFyXsf+AAqZAhjsKUtiiaIYjg2J4gSOBErAJLdmS3GZXcsh2L0Sipo4wIrtOHKWp0eWaAYVoCkpH7mWFLWke1nVrN1VDpdGIGeEVFpVEosjzY40imGVTJyH0DhbdBi6OHtjVJbuR1yCdt5nUdF2eNkap2TxWVNHq-wcpBRVvEVolTm9Lxcs4S6MjYjh5v9iWqc1GnHR1YPnSeOkXvptFPsZwVVoDRHkyDlNdUdl32fDzRPNZ7iyManwsF0KjTk+H0pu8otFU+KjEyzbqdiQawACLCNQNPRfThmM0zCXK3Iqsa1rPNw8USiTg8N21GhEnaCOzhmr0lrWltMmTrmcFKypcjq2gZAAG63rAZ1gHgEDmM2VAAMpnmgRyqxb02IK4s7skuI4jrmvxKKyxoOB9k76ByCj6L8mh+8xgch2HEdRzHGQmWgqLopiuL4oS2Bjan-ZwXYMnZwtxVVHohc3bOlUvRORg9DYfhljgPAYvAOTMypPaw2nCCSHbcgcg4kGpkuWcS2VtR2C9MleMJzi1dhQVG-7MzzNvGX9vvtSHzdeoaLVe0IJC7qDsLoRkj4nZMi0DXA6noP5XQcv8ZQRhvCPnnGfScrJczITzMPVw1geg6EVs-BqJMWK1jbP6CACDebFAkooAUcF+YYNqAXMqkEFByGtMVUE-k86wKakDcmtDLaICduBNQWhHYVzguwxo7QuESXnPoCuBDq6kNwsbCy3VDyiN3t4XQH18GDxeOUcSKYPqoR0IYMWaNBGs0sgeJQ+j+x9HkAKFoRVHCQR6PBRovQuGMlkIYB6fQOQDE0cpZiOjgYKFcSBRG9gpFbRsVoX4Fj5CLnnPlfOD0NH1S0f7WJ7NQZcxEZNHe-ZmjqGSdoF61g8y1F5GaDoh83BPi2r0BwSYHEq2VGrTWlAEkOXKNaOcOhrZLjAlmUqjReTyFmcoDyKZB59IDkHUOaBw50Cbs2EZ8NHyzjQuoJ4kknByIvo0X4oIPqghHE7ecoJGRLx8EAA */
   context: ({ input }) => ({
     playAudio: input.playAudio || null,
     setLights: input.setLights || null,
@@ -183,16 +182,22 @@ export const machine = setup({
                 },
                 "playCountdown",
               ],
+
               after: {
                 "1000": {
                   target: "Timer Running",
                   actions: [{
                     type: "setLightsGreen",
-                  }, "playStart", "overheadLightsOn"],
+                  }, "playStart"],
                   meta: {},
                   reenter: true,
                 },
-              },
+
+                "500": {
+                  target: "1",
+                  actions: "overheadLightsOn"
+                }
+              }
             },
 
             "Timer Running": {
@@ -227,7 +232,7 @@ export const machine = setup({
                   description: `Driver has Tapped Out`,
                 },
               },
-            },
+            }
           },
 
           on: {
